@@ -5,6 +5,8 @@ import java.util.LinkedList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import quickfix.field.TransactTime;
+
 public class Ita {
 
 	final Logger logger = LoggerFactory.getLogger(getClass());
@@ -124,6 +126,10 @@ public class Ita {
 					.getValue() : ask.price.getValue());
 			
 			logger.info("Uncross " + uncrossqty + " at " + uncrosspx);
+
+			TransactTime timestamp = new TransactTime();
+			ask.setTransactTimestamp(timestamp);
+			bid.setTransactTimestamp(timestamp);
 
 			bid.fill(uncrossqty, uncrosspx);
 			ask.fill(uncrossqty, uncrosspx);

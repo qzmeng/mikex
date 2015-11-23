@@ -85,6 +85,7 @@ public class Orderbook {
 	public void delOrder(Order delOrd) {
 
 		String remKey = delOrd.getOrigKey();
+		delOrd.setTimestamp();
 		if (book.containsKey(remKey)) {
 
 			Order ord = book.get(remKey);
@@ -122,7 +123,7 @@ public class Orderbook {
 						"order found in book but missing from ita");
 				return;
 			}
-
+			ord.setTimestamp();
 			ord.ordStatus = new quickfix.field.OrdStatus(
 					quickfix.field.OrdStatus.CANCELED);
 			ord.leavesQty = new quickfix.field.LeavesQty(0);
@@ -132,6 +133,7 @@ public class Orderbook {
 
 		} else {
 			logger.info("Cancel rej " + remKey);
+			delOrd.setTimestamp();
 			delOrd.getParser().sendCxlRejUnknown(delOrd,
 					"order not in order book");
 		}
@@ -140,6 +142,7 @@ public class Orderbook {
 	public void replaceOrder(Order replOrd) {
 
 		String remKey = replOrd.getOrigKey();
+		replOrd.setTimestamp();
 		logger.info("Replace order start " + remKey);
 
 		if (book.containsKey(remKey)) {
@@ -151,17 +154,17 @@ public class Orderbook {
 
 			if (ord.ordStatus.valueEquals(quickfix.field.OrdStatus.FILLED)) {
 				replOrd.getParser().sendReplaceRejKnown(replOrd, ord,
-						"order already filled");
+						"Mikex: order already filled");
 				return;
 			} else if ((ord.ordStatus
 					.valueEquals(quickfix.field.OrdStatus.CANCELED))) {
 				replOrd.getParser().sendReplaceRejKnown(replOrd, ord,
-						"order already cancelled");
+						"Mikex: order already cancelled");
 				return;
 			} else if ((ord.ordStatus
 					.valueEquals(quickfix.field.OrdStatus.REJECTED))) {
 				replOrd.getParser().sendReplaceRejKnown(replOrd, ord,
-						"order already rejected");
+						"Mikex: order already rejected");
 				return;
 			}
 			double px = replOrd.price.getValue();
@@ -175,7 +178,7 @@ public class Orderbook {
 				replOrd.getParser().sendReplaceRejKnown(
 						replOrd,
 						ord,
-						"order symbol key does not match: old="
+						"Mikex: order symbol key does not match: old="
 								+ ord.getSymbolKey() + " vs new="
 								+ replOrd.getSymbolKey());
 				return;
@@ -183,13 +186,13 @@ public class Orderbook {
 
 			if (!ord.side.valueEquals(replOrd.side.getValue())) {
 				replOrd.getParser().sendReplaceRejKnown(replOrd, ord,
-						"order side does not match");
+						"Mikex: order side does not match");
 				return;
 			}
 
 			if (qtydelta != 0 && qty <= ord.cumQty.getValue()) {
 				replOrd.getParser().sendReplaceRejKnown(replOrd, ord,
-						"can't replace qty less than cum qty");
+						"Mikex: can't replace qty less than cum qty");
 				return;
 			}
 
@@ -227,7 +230,7 @@ public class Orderbook {
 						quickfix.field.OrdStatus.REPLACED);
 
 				logger.info("Replace ack " + remKey);
-				replOrd.getParser().sendReplAck(replOrd);
+				replOrd.getParser().sendReplAck(replOrd,ord);
 
 				replOrd.setTimestamp();
 				ita.addOrder(replOrd);
@@ -257,7 +260,7 @@ public class Orderbook {
 									+ ord);
 						}
 					}
-
+					ord.setTimestamp();
 					ord.ordStatus = new quickfix.field.OrdStatus(
 							quickfix.field.OrdStatus.CANCELED);
 					ord.leavesQty = new quickfix.field.LeavesQty(0);

@@ -71,7 +71,7 @@ public class MessageParser extends MessageCracker {
 			}
 
 			if (ord.orderqty.getValue() < 1) {
-				this.sendReject(ord, "order qty must be 1 or greater");
+				this.sendReject(ord, "Mikex: order qty must be 1 or greater");
 			} else {
 				orderbook.newOrder(ord);
 			}
@@ -188,6 +188,7 @@ public class MessageParser extends MessageCracker {
 		quickfix.field.CumQty cumQty = new quickfix.field.CumQty(0);
 		quickfix.field.Price price = origord.price;
 		quickfix.field.OrderQty orderqty = origord.orderqty;
+		quickfix.field.TransactTime transactTime = origord.transactTime;
 
 		msg.setField(newClOrdId);
 		msg.setField(ordStatus);
@@ -202,6 +203,7 @@ public class MessageParser extends MessageCracker {
 		msg.setField(execTransType);
 		msg.setField(price);
 		msg.setField(orderqty);
+		msg.setField(transactTime);
 
 		// optional ones
 		quickfix.field.SecurityType securityType = origord.securityType;
@@ -243,6 +245,7 @@ public class MessageParser extends MessageCracker {
 		quickfix.field.OrderQty orderqty = origord.orderqty;
 		quickfix.field.ExecID execID = getNextExecID();
 		quickfix.field.Text text = new quickfix.field.Text(rejectReason);
+		quickfix.field.TransactTime transactTime = origord.transactTime;
 		msg.setField(newClOrdId);
 		msg.setField(ordStatus);
 		msg.setField(orderID);
@@ -257,6 +260,7 @@ public class MessageParser extends MessageCracker {
 		msg.setField(price);
 		msg.setField(orderqty);
 		msg.setField(text);
+		msg.setField(transactTime);
 
 		// optional ones
 		quickfix.field.SecurityType securityType = origord.securityType;
@@ -298,6 +302,7 @@ public class MessageParser extends MessageCracker {
 		quickfix.field.Price price = ord.price;
 		quickfix.field.OrderQty orderqty = ord.orderqty;
 		quickfix.field.ExecID execID = getNextExecID();
+		quickfix.field.TransactTime transactTime = ord.transactTime;
 
 		msg.setField(clOrdID);
 		msg.setField(origClOrdID);
@@ -313,6 +318,7 @@ public class MessageParser extends MessageCracker {
 		msg.setField(execTransType);
 		msg.setField(price);
 		msg.setField(orderqty);
+		msg.setField(transactTime);
 
 		// optional ones
 		quickfix.field.SecurityType securityType = ord.securityType;
@@ -347,6 +353,8 @@ public class MessageParser extends MessageCracker {
 				quickfix.field.CxlRejReason.UNKNOWN_ORDER);
 		quickfix.field.CxlRejResponseTo cxlRejResponseTo = new quickfix.field.CxlRejResponseTo(
 				quickfix.field.CxlRejResponseTo.ORDER_CANCEL_REQUEST);
+		quickfix.field.TransactTime transactTime = delOrd.transactTime;
+
 		msg.setField(clOrdID);
 		msg.setField(ordStatus);
 
@@ -354,6 +362,7 @@ public class MessageParser extends MessageCracker {
 		msg.setField(orderID);
 		msg.setField(cxlRejReason);
 		msg.setField(cxlRejResponseTo);
+		msg.setField(transactTime);
 		quickfix.field.Text text = new quickfix.field.Text(rejReason);
 		msg.setField(text);
 
@@ -372,6 +381,8 @@ public class MessageParser extends MessageCracker {
 				quickfix.field.CxlRejReason.TOO_LATE_TO_CANCEL);
 		quickfix.field.CxlRejResponseTo cxlRejResponseTo = new quickfix.field.CxlRejResponseTo(
 				quickfix.field.CxlRejResponseTo.ORDER_CANCEL_REQUEST);
+		quickfix.field.TransactTime transactTime = delOrd.transactTime;
+
 		msg.setField(clOrdID);
 		msg.setField(ordStatus);
 
@@ -379,6 +390,7 @@ public class MessageParser extends MessageCracker {
 		msg.setField(orderID);
 		msg.setField(cxlRejReason);
 		msg.setField(cxlRejResponseTo);
+		msg.setField(transactTime);
 		quickfix.field.Text text = new quickfix.field.Text(rejReason);
 		msg.setField(text);
 
@@ -434,9 +446,9 @@ public class MessageParser extends MessageCracker {
 		quickfix.field.LastPx lastPx = ord.lastPx;
 		quickfix.field.LastShares lastShares = ord.lastShares;
 		quickfix.field.ExecID execID = getNextExecID();
+		quickfix.field.TransactTime transactTime = ord.transactTime;
 
 		msg.setField(clOrdID);
-		// msg.setField(origClOrdID);
 		msg.setField(execID);
 		msg.setField(ordStatus);
 		msg.setField(orderID);
@@ -451,6 +463,7 @@ public class MessageParser extends MessageCracker {
 		msg.setField(execTransType);
 		msg.setField(price);
 		msg.setField(orderqty);
+		msg.setField(transactTime);
 
 		// optional ones
 		quickfix.field.SecurityType securityType = ord.securityType;
@@ -481,6 +494,8 @@ public class MessageParser extends MessageCracker {
 		quickfix.field.OrdStatus ordStatus = ord.ordStatus;
 		quickfix.field.ClOrdID clOrdID = replOrd.clOrdID;
 		quickfix.field.OrigClOrdID origClOrdID = replOrd.origClOrdID;
+		quickfix.field.TransactTime transactTime = replOrd.transactTime;
+
 		msg.setField(clOrdID);
 		msg.setField(ordStatus);
 
@@ -494,6 +509,7 @@ public class MessageParser extends MessageCracker {
 		msg.setField(cxlRejResponseTo);
 		quickfix.field.Text text = new quickfix.field.Text(rejReason);
 		msg.setField(text);
+		msg.setField(transactTime);
 
 		// optional ones
 		quickfix.field.SecurityType securityType = ord.securityType;
@@ -517,7 +533,7 @@ public class MessageParser extends MessageCracker {
 
 	}
 
-	public void sendReplAck(Order ord) {
+	public void sendReplAck(Order ord, Order origOrd) {
 
 		quickfix.fix42.ExecutionReport msg = new quickfix.fix42.ExecutionReport();
 		quickfix.field.ClOrdID newClOrdId = ord.clOrdID;
@@ -529,6 +545,8 @@ public class MessageParser extends MessageCracker {
 		quickfix.field.OrderID orderID = ord.orderID;
 		quickfix.field.ExecID execID = getNextExecID();
 
+		quickfix.field.OrigClOrdID origClOrdID = new quickfix.field.OrigClOrdID(origOrd.clOrdID.getValue());
+		
 		quickfix.field.Symbol symbol = ord.symbol;
 		quickfix.field.Side side = ord.side;
 		quickfix.field.LeavesQty leavesQty = ord.leavesQty;
@@ -536,8 +554,10 @@ public class MessageParser extends MessageCracker {
 		quickfix.field.CumQty cumQty = ord.cumQty;
 		quickfix.field.Price price = ord.price;
 		quickfix.field.OrderQty orderqty = ord.orderqty;
+		quickfix.field.TransactTime transactTime = ord.transactTime;
 
 		msg.setField(newClOrdId);
+		msg.setField(origClOrdID);
 		msg.setField(ordStatus);
 		msg.setField(orderID);
 		msg.setField(execID);
@@ -550,6 +570,7 @@ public class MessageParser extends MessageCracker {
 		msg.setField(execTransType);
 		msg.setField(price);
 		msg.setField(orderqty);
+		msg.setField(transactTime);
 
 		// optional ones
 		quickfix.field.SecurityType securityType = ord.securityType;
@@ -585,6 +606,8 @@ public class MessageParser extends MessageCracker {
 				quickfix.field.CxlRejReason.UNKNOWN_ORDER);
 		quickfix.field.CxlRejResponseTo cxlRejResponseTo = new quickfix.field.CxlRejResponseTo(
 				quickfix.field.CxlRejResponseTo.ORDER_CANCEL_REPLACE_REQUEST);
+		quickfix.field.TransactTime transactTime = replOrd.transactTime;
+
 		msg.setField(clOrdID);
 		msg.setField(ordStatus);
 
@@ -592,6 +615,7 @@ public class MessageParser extends MessageCracker {
 		msg.setField(orderID);
 		msg.setField(cxlRejReason);
 		msg.setField(cxlRejResponseTo);
+		msg.setField(transactTime);
 		quickfix.field.Text text = new quickfix.field.Text(rejReason);
 		msg.setField(text);
 
@@ -616,6 +640,9 @@ public class MessageParser extends MessageCracker {
 		quickfix.field.Price price = ord.price;
 		quickfix.field.OrderQty orderqty = ord.orderqty;
 		quickfix.field.ExecID execID = getNextExecID();
+		quickfix.field.TransactTime transactTime = ord.transactTime;
+		quickfix.field.Text text = new quickfix.field.Text("Mikex: unsolicited cancel");
+
 
 		msg.setField(clOrdID);
 		msg.setField(execID);
@@ -630,6 +657,8 @@ public class MessageParser extends MessageCracker {
 		msg.setField(execTransType);
 		msg.setField(price);
 		msg.setField(orderqty);
+		msg.setField(transactTime);
+		msg.setField(text);
 
 		// optional ones
 		quickfix.field.SecurityType securityType = ord.securityType;
