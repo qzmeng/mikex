@@ -38,8 +38,9 @@
             <zipfileset dir="." includes="slf4j-log4j12-1.6.2.jar"/>
             <zipfileset dir="." includes="mina-core-1.1.7.jar"/>
             <zipfileset dir="." includes="log4j.properties"/>
-            <zipfileset dir="/usr/share/eclipse/dropins/jdt/plugins/org.junit_4.8.2.dist" includes="junit.jar"/>
-            <zipfileset dir="/usr/share/eclipse/dropins/jdt/plugins" includes="org.hamcrest.core_1.3.0.jar"/>
+            <!-- zipfileset dir="/usr/share/eclipse/dropins/jdt/plugins/org.junit_4.8.2.dist" includes="junit.jar" -->
+            <!-- zipfileset dir="/usr/share/eclipse/dropins/jdt/plugins" includes="org.hamcrest.core_1.3.0.jar" -->
         </jar>
     </target>
+	
 </project>
