@@ -1,0 +1,24 @@
+# default settings for sessions
+[DEFAULT]
+ConnectionType=acceptor
+ReconnectInterval=60
+SenderCompID=MIKEX
+FileLogPath=log/
+FileStorePath=log/
+ResetOnLogout=N
+ResetOnDisconnect=N
+SendResetSeqNumFlag=N
+
+[SESSION]
+# inherit ConnectionType, ReconnectInterval and SenderCompID from default
+
+BeginString=FIX.4.2
+TargetCompID=CLIENT
+StartTime=00:00:00
+EndTime=23:59:59
+HeartBtInt=20
+SocketAcceptPort=12345
+;SocketConnectPort=7001
+;SocketConnectHost=exchange.marketcetera.com
+DataDictionary=FIX42.xml
+
