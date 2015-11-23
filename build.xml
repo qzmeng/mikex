@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="create_run_jar" name="Create Runnable Jar for Project mikex with Jar-in-Jar Loader">
+
+  
+    <target name="clean">
+        <delete dir="build"/>
+    </target>
+
+    <target name="compile">
+        <mkdir dir="build/classes"/>
+        <javac srcdir="src" destdir="build/classes"
+               includeantruntime="false">
+        <classpath>
+          <fileset dir=".">
+            <include name="*.jar"/>
+          </fileset>
+        </classpath>
+        </javac>
+    </target>
+
+    <!--this file was created by Eclipse Runnable JAR Export Wizard-->
+    <!--ANT 1.7 is required                                        -->
+    <target name="create_run_jar" depends="compile">
+        <mkdir dir="build"/>
+        <delete file="build/mikex.jar"/>
+        <jar destfile="build/mikex.jar" basedir="build/classes">
+            <manifest>
+                <attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader"/>
+                <attribute name="Rsrc-Main-Class" value="mikex.Startup"/>
+                <attribute name="Class-Path" value="."/>
+                <attribute name="Rsrc-Class-Path" value="./ log4j-1.2.16.jar quickfixj-all-1.5.1.jar slf4j-api-1.6.2.jar slf4j-log4j12-1.6.2.jar mina-core-1.1.7.jar junit.jar org.hamcrest.core_1.3.0.jar"/>
+            </manifest>
+            <zipfileset src="jar-in-jar-loader.zip"/>
+            <fileset dir="./build"/>
+            <zipfileset dir="." includes="log4j-1.2.16.jar"/>
+            <zipfileset dir="." includes="quickfixj-all-1.5.1.jar"/>
+            <zipfileset dir="." includes="slf4j-api-1.6.2.jar"/>
+            <zipfileset dir="." includes="slf4j-log4j12-1.6.2.jar"/>
+            <zipfileset dir="." includes="mina-core-1.1.7.jar"/>
+            <zipfileset dir="." includes="log4j.properties"/>
+            <zipfileset dir="/usr/share/eclipse/dropins/jdt/plugins/org.junit_4.8.2.dist" includes="junit.jar"/>
+            <zipfileset dir="/usr/share/eclipse/dropins/jdt/plugins" includes="org.hamcrest.core_1.3.0.jar"/>
+        </jar>
+    </target>
+</project>
