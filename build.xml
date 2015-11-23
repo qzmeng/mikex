@@ -9,7 +9,7 @@
     <target name="compile">
         <mkdir dir="build/classes"/>
         <javac srcdir="src" destdir="build/classes"
-               includeantruntime="false">
+               includeantruntime="false" debug="true">
         <classpath>
           <fileset dir=".">
             <include name="*.jar"/>
