@@ -45,10 +45,12 @@ public class MessageParser extends MessageCracker {
 			msg.get(ord.clOrdID);
 			msg.get(ord.side);
 			msg.get(ord.symbol);
-			msg.get(ord.price);
 			msg.get(ord.orderqty);
+			msg.get(ord.ordType);
+			if (ord.ordType.getValue() == quickfix.field.OrdType.LIMIT)
+				msg.get(ord.price);
 
-			// optional tags
+			// optional tags2
 			try {
 				msg.get(ord.securityID);
 			} catch (FieldNotFound e) {
@@ -73,6 +75,7 @@ public class MessageParser extends MessageCracker {
 			if (ord.orderqty.getValue() < 1) {
 				this.sendReject(ord, "Mikex: order qty must be 1 or greater");
 			} else {
+				// actual entry point
 				orderbook.newOrder(ord);
 			}
 		} catch (FieldNotFound e) {

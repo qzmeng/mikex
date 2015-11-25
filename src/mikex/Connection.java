@@ -51,14 +51,14 @@ public class Connection implements quickfix.Application {
 	@Override
 	public void fromAdmin(Message arg0, SessionID arg1) throws FieldNotFound,
 			IncorrectDataFormat, IncorrectTagValue, RejectLogon {
-		logger.info("fromAdmin[" + arg1.toString() + "]: " + arg0.toString());
+		logger.info("fromAdmin[" + arg1.toString() + "]: " + formatFix(arg0));
 
 	}
 
 	@Override
 	public void fromApp(Message arg0, SessionID arg1) throws FieldNotFound,
 			IncorrectDataFormat, IncorrectTagValue, UnsupportedMessageType {
-		logger.info("fromApp[" + arg1.toString() + "]: " + arg0.toString());
+		logger.info("fromApp[" + arg1.toString() + "]: " + formatFix(arg0));
 		if (this.responseDelay != 0) {
 			try {
 				Thread.sleep(this.responseDelay);
@@ -69,6 +69,10 @@ public class Connection implements quickfix.Application {
 		messageParser.crack(arg0, arg1);
 
 	}
+
+    private String formatFix(Message msg) {
+        return msg.toString().replace("\001","|");
+    }
 
 	@Override
 	public void onCreate(SessionID arg0) {
@@ -91,12 +95,12 @@ public class Connection implements quickfix.Application {
 
 	@Override
 	public void toAdmin(Message arg0, SessionID arg1) {
-		logger.info("toAdmin[" + arg1.toString() + "]: " + arg0.toString());
+		logger.info("toAdmin[" + arg1.toString() + "]: " + formatFix(arg0));
 	}
 
 	@Override
 	public void toApp(Message arg0, SessionID arg1) throws DoNotSend {
-		logger.info("toApp[" + arg1.toString() + "]: " + arg0.toString());
+		logger.info("toApp[" + arg1.toString() + "]: " + formatFix(arg0));
 
 	}
 

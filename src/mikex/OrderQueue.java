@@ -11,7 +11,7 @@ public class OrderQueue {
 
 	final Logger logger = LoggerFactory.getLogger(getClass());
 
-	private double price;
+	private double price = Double.NaN;
 	private LinkedList<Order> queue = new LinkedList<Order>();
 
 	public OrderQueue(double d) {
@@ -19,10 +19,15 @@ public class OrderQueue {
 		logger.debug("Creating queue at price " + this.price);
 	}
 
+	public OrderQueue() {
+		logger.debug("Creating queue at MARKET");
+	}
+	
+	
 	public void add(Order ord) {
 		queue.add(ord);
 		logger.debug("Adding order, total " + queue.size()
-				+ " orders at price " + this.price);
+				+ " orders at level");
 	}
 
 	public double getPrice() {

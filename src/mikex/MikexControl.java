@@ -54,5 +54,10 @@ public class MikexControl implements MikexControlMBean {
 	public void setConnectionResponseDelay(int newResponseDelay) {
 		this.connectionManager.setDelayAll(newResponseDelay);
 	}
+	
+	@Override
+	public int getConnectionResponseDelay() {
+		return this.connectionManager.getResponseDelay();
+	}
 
 }

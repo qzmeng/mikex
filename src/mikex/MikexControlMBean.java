@@ -9,4 +9,5 @@ public interface MikexControlMBean {
   public String getName();
   public String getMarketStatus();
   public void setConnectionResponseDelay(int newResponseDelay);
+  int getConnectionResponseDelay();
 }

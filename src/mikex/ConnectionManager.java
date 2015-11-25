@@ -13,6 +13,7 @@ public class ConnectionManager {
 
 	HashMap<String, Connection> connectionList = new HashMap<String, Connection>();
 	Orderbook orderbook;
+	int responseDelay;
 
 	public void startup() {
 
@@ -68,9 +69,14 @@ public class ConnectionManager {
 	}
 	
 	public void setDelayAll(int newResponseDelay) {
+		this.responseDelay=newResponseDelay;
 		for (Connection c : connectionList.values()) {
 			c.setDelay(newResponseDelay);
 		}
+	}
+
+	public int getResponseDelay() {
+		return this.responseDelay;
 	}
 
 }
