@@ -9,7 +9,7 @@ public class MikexControl implements MikexControlMBean {
 	private ConnectionManager connectionManager;
 
 	public void cancelAll() {
-		this.orderbook.cancelAll();
+		this.orderbook.cancelAll("Mass cancel by operator");
 
 	}
 

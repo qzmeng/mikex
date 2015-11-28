@@ -49,7 +49,7 @@ public class MessageParser extends MessageCracker {
 			msg.get(ord.ordType);
 			if (ord.ordType.getValue() == quickfix.field.OrdType.LIMIT)
 				msg.get(ord.price);
-
+			msg.get(ord.timeInForce);
 			// optional tags2
 			try {
 				msg.get(ord.securityID);
@@ -69,6 +69,10 @@ public class MessageParser extends MessageCracker {
 			}
 			try {
 				msg.get(ord.strikePrice);
+			} catch (FieldNotFound e) {
+			}
+			try {
+				msg.get(ord.currency);
 			} catch (FieldNotFound e) {
 			}
 
@@ -192,6 +196,8 @@ public class MessageParser extends MessageCracker {
 		quickfix.field.Price price = origord.price;
 		quickfix.field.OrderQty orderqty = origord.orderqty;
 		quickfix.field.TransactTime transactTime = origord.transactTime;
+		quickfix.field.Text text = new quickfix.field.Text("Accepted by Mikex SIMULATOR");
+
 
 		msg.setField(newClOrdId);
 		msg.setField(ordStatus);
@@ -207,26 +213,41 @@ public class MessageParser extends MessageCracker {
 		msg.setField(price);
 		msg.setField(orderqty);
 		msg.setField(transactTime);
+		msg.setField(text);
+
 
 		// optional ones
-		quickfix.field.SecurityType securityType = origord.securityType;
-		quickfix.field.SecurityID securityID = origord.securityID;
-		quickfix.field.MaturityMonthYear maturityMonthYear = origord.maturityMonthYear;
-		quickfix.field.PutOrCall putOrCall = origord.putOrCall;
-		quickfix.field.StrikePrice strikePrice = origord.strikePrice;
-		if (!origord.securityType.valueEquals(""))
-			msg.setField(securityType);
-		if (!origord.securityID.valueEquals(""))
-			msg.setField(securityID);
-		if (!origord.maturityMonthYear.valueEquals(""))
-			msg.setField(maturityMonthYear);
-		if (origord.putOrCall.valueEquals(quickfix.field.PutOrCall.PUT)
-				|| origord.putOrCall.valueEquals(quickfix.field.PutOrCall.CALL))
-			msg.setField(putOrCall);
-		if (!origord.strikePrice.valueEquals(0))
-			msg.setField(strikePrice);
-
+		addOptionalFields(origord, msg);
 		send(msg);
+	}
+
+	private void addOptionalFields(Order order,
+			quickfix.fix42.Message msg) {
+		quickfix.field.SecurityType securityType = order.securityType;
+		quickfix.field.SecurityID securityID = order.securityID;
+		quickfix.field.MaturityMonthYear maturityMonthYear = order.maturityMonthYear;
+		quickfix.field.PutOrCall putOrCall = order.putOrCall;
+		quickfix.field.StrikePrice strikePrice = order.strikePrice;
+		quickfix.field.Currency currency = order.currency;
+		quickfix.field.OrdType ordType = order.ordType;
+		quickfix.field.TimeInForce timeInForce = order.timeInForce;
+		if (!securityType.valueEquals(""))
+			msg.setField(securityType);
+		if (!securityID.valueEquals(""))
+			msg.setField(securityID);
+		if (!maturityMonthYear.valueEquals(""))
+			msg.setField(maturityMonthYear);
+		if (putOrCall.valueEquals(quickfix.field.PutOrCall.PUT)
+				|| putOrCall.valueEquals(quickfix.field.PutOrCall.CALL))
+			msg.setField(putOrCall);
+		if (!strikePrice.valueEquals(0))
+			msg.setField(strikePrice);
+		if (!currency.valueEquals(""))
+			msg.setField(currency);
+		if (!ordType.equals(""))
+			msg.setField(ordType);
+		if (!timeInForce.equals(""))
+			msg.setField(ordType);		
 	}
 
 	public void sendReject(Order origord, String rejectReason) {
@@ -265,24 +286,7 @@ public class MessageParser extends MessageCracker {
 		msg.setField(text);
 		msg.setField(transactTime);
 
-		// optional ones
-		quickfix.field.SecurityType securityType = origord.securityType;
-		quickfix.field.SecurityID securityID = origord.securityID;
-		quickfix.field.MaturityMonthYear maturityMonthYear = origord.maturityMonthYear;
-		quickfix.field.PutOrCall putOrCall = origord.putOrCall;
-		quickfix.field.StrikePrice strikePrice = origord.strikePrice;
-		if (!origord.securityType.valueEquals(""))
-			msg.setField(securityType);
-		if (!origord.securityID.valueEquals(""))
-			msg.setField(securityID);
-		if (!origord.maturityMonthYear.valueEquals(""))
-			msg.setField(maturityMonthYear);
-		if (origord.putOrCall.valueEquals(quickfix.field.PutOrCall.PUT)
-				|| origord.putOrCall.valueEquals(quickfix.field.PutOrCall.CALL))
-			msg.setField(putOrCall);
-		if (!origord.strikePrice.valueEquals(0))
-			msg.setField(strikePrice);
-
+		addOptionalFields(origord, msg);
 		send(msg);
 	}
 
@@ -323,23 +327,7 @@ public class MessageParser extends MessageCracker {
 		msg.setField(orderqty);
 		msg.setField(transactTime);
 
-		// optional ones
-		quickfix.field.SecurityType securityType = ord.securityType;
-		quickfix.field.SecurityID securityID = ord.securityID;
-		quickfix.field.MaturityMonthYear maturityMonthYear = ord.maturityMonthYear;
-		quickfix.field.PutOrCall putOrCall = ord.putOrCall;
-		quickfix.field.StrikePrice strikePrice = ord.strikePrice;
-		if (!ord.securityType.valueEquals(""))
-			msg.setField(securityType);
-		if (!ord.securityID.valueEquals(""))
-			msg.setField(securityID);
-		if (!ord.maturityMonthYear.valueEquals(""))
-			msg.setField(maturityMonthYear);
-		if (ord.putOrCall.valueEquals(quickfix.field.PutOrCall.PUT)
-				|| ord.putOrCall.valueEquals(quickfix.field.PutOrCall.CALL))
-			msg.setField(putOrCall);
-		if (!ord.strikePrice.valueEquals(0))
-			msg.setField(strikePrice);
+		addOptionalFields(ord, msg);
 
 		send(msg);
 	}
@@ -397,27 +385,11 @@ public class MessageParser extends MessageCracker {
 		quickfix.field.Text text = new quickfix.field.Text(rejReason);
 		msg.setField(text);
 
-		// optional ones
-		quickfix.field.SecurityType securityType = ord.securityType;
-		quickfix.field.SecurityID securityID = ord.securityID;
-		quickfix.field.MaturityMonthYear maturityMonthYear = ord.maturityMonthYear;
-		quickfix.field.PutOrCall putOrCall = ord.putOrCall;
-		quickfix.field.StrikePrice strikePrice = ord.strikePrice;
-		if (!ord.securityType.valueEquals(""))
-			msg.setField(securityType);
-		if (!ord.securityID.valueEquals(""))
-			msg.setField(securityID);
-		if (!ord.maturityMonthYear.valueEquals(""))
-			msg.setField(maturityMonthYear);
-		if (ord.putOrCall.valueEquals(quickfix.field.PutOrCall.PUT)
-				|| ord.putOrCall.valueEquals(quickfix.field.PutOrCall.CALL))
-			msg.setField(putOrCall);
-		if (!ord.strikePrice.valueEquals(0))
-			msg.setField(strikePrice);
-
+		addOptionalFields(ord, msg);
 		send(msg);
 
 	}
+
 
 	public void sendFill(Order order) {
 
@@ -437,6 +409,12 @@ public class MessageParser extends MessageCracker {
 		quickfix.field.ExecType execType = new quickfix.field.ExecType(filltype);
 		quickfix.field.ExecTransType execTransType = new quickfix.field.ExecTransType(
 				quickfix.field.ExecTransType.NEW);
+
+
+		msg.setField(clOrdID);
+		msg.setField(execType);
+		msg.setField(execTransType);
+		
 		quickfix.field.OrderID orderID = ord.orderID;
 		quickfix.field.OrdStatus ordStatus = ord.ordStatus;
 		quickfix.field.Symbol symbol = ord.symbol;
@@ -450,8 +428,6 @@ public class MessageParser extends MessageCracker {
 		quickfix.field.LastShares lastShares = ord.lastShares;
 		quickfix.field.ExecID execID = getNextExecID();
 		quickfix.field.TransactTime transactTime = ord.transactTime;
-
-		msg.setField(clOrdID);
 		msg.setField(execID);
 		msg.setField(ordStatus);
 		msg.setField(orderID);
@@ -462,29 +438,11 @@ public class MessageParser extends MessageCracker {
 		msg.setField(lastPx);
 		msg.setField(lastShares);
 		msg.setField(cumQty);
-		msg.setField(execType);
-		msg.setField(execTransType);
 		msg.setField(price);
 		msg.setField(orderqty);
 		msg.setField(transactTime);
 
-		// optional ones
-		quickfix.field.SecurityType securityType = ord.securityType;
-		quickfix.field.SecurityID securityID = ord.securityID;
-		quickfix.field.MaturityMonthYear maturityMonthYear = ord.maturityMonthYear;
-		quickfix.field.PutOrCall putOrCall = ord.putOrCall;
-		quickfix.field.StrikePrice strikePrice = ord.strikePrice;
-		if (!ord.securityType.valueEquals(""))
-			msg.setField(securityType);
-		if (!ord.securityID.valueEquals(""))
-			msg.setField(securityID);
-		if (!ord.maturityMonthYear.valueEquals(""))
-			msg.setField(maturityMonthYear);
-		if (ord.putOrCall.valueEquals(quickfix.field.PutOrCall.PUT)
-				|| ord.putOrCall.valueEquals(quickfix.field.PutOrCall.CALL))
-			msg.setField(putOrCall);
-		if (!ord.strikePrice.valueEquals(0))
-			msg.setField(strikePrice);
+		addOptionalFields(ord, msg);
 
 		send(msg);
 	}
@@ -514,23 +472,7 @@ public class MessageParser extends MessageCracker {
 		msg.setField(text);
 		msg.setField(transactTime);
 
-		// optional ones
-		quickfix.field.SecurityType securityType = ord.securityType;
-		quickfix.field.SecurityID securityID = ord.securityID;
-		quickfix.field.MaturityMonthYear maturityMonthYear = ord.maturityMonthYear;
-		quickfix.field.PutOrCall putOrCall = ord.putOrCall;
-		quickfix.field.StrikePrice strikePrice = ord.strikePrice;
-		if (!ord.securityType.valueEquals(""))
-			msg.setField(securityType);
-		if (!ord.securityID.valueEquals(""))
-			msg.setField(securityID);
-		if (!ord.maturityMonthYear.valueEquals(""))
-			msg.setField(maturityMonthYear);
-		if (ord.putOrCall.valueEquals(quickfix.field.PutOrCall.PUT)
-				|| ord.putOrCall.valueEquals(quickfix.field.PutOrCall.CALL))
-			msg.setField(putOrCall);
-		if (!ord.strikePrice.valueEquals(0))
-			msg.setField(strikePrice);
+		addOptionalFields(ord, msg);
 
 		send(msg);
 
@@ -549,7 +491,8 @@ public class MessageParser extends MessageCracker {
 		quickfix.field.ExecID execID = getNextExecID();
 
 		quickfix.field.OrigClOrdID origClOrdID = new quickfix.field.OrigClOrdID(origOrd.clOrdID.getValue());
-		
+		msg.setField(newClOrdId);
+		msg.setField(origClOrdID);
 		quickfix.field.Symbol symbol = ord.symbol;
 		quickfix.field.Side side = ord.side;
 		quickfix.field.LeavesQty leavesQty = ord.leavesQty;
@@ -559,8 +502,7 @@ public class MessageParser extends MessageCracker {
 		quickfix.field.OrderQty orderqty = ord.orderqty;
 		quickfix.field.TransactTime transactTime = ord.transactTime;
 
-		msg.setField(newClOrdId);
-		msg.setField(origClOrdID);
+
 		msg.setField(ordStatus);
 		msg.setField(orderID);
 		msg.setField(execID);
@@ -575,24 +517,7 @@ public class MessageParser extends MessageCracker {
 		msg.setField(orderqty);
 		msg.setField(transactTime);
 
-		// optional ones
-		quickfix.field.SecurityType securityType = ord.securityType;
-		quickfix.field.SecurityID securityID = ord.securityID;
-		quickfix.field.MaturityMonthYear maturityMonthYear = ord.maturityMonthYear;
-		quickfix.field.PutOrCall putOrCall = ord.putOrCall;
-		quickfix.field.StrikePrice strikePrice = ord.strikePrice;
-		if (!ord.securityType.valueEquals(""))
-			msg.setField(securityType);
-		if (!ord.securityID.valueEquals(""))
-			msg.setField(securityID);
-		if (!ord.maturityMonthYear.valueEquals(""))
-			msg.setField(maturityMonthYear);
-		if (ord.putOrCall.valueEquals(quickfix.field.PutOrCall.PUT)
-				|| ord.putOrCall.valueEquals(quickfix.field.PutOrCall.CALL))
-			msg.setField(putOrCall);
-		if (!ord.strikePrice.valueEquals(0))
-			msg.setField(strikePrice);
-
+		addOptionalFields(ord, msg);
 		send(msg);
 
 	}
@@ -625,7 +550,7 @@ public class MessageParser extends MessageCracker {
 		send(msg);
 	}
 
-	public void sendUnsolicitedCxl(Order ord) {
+	public void sendUnsolicitedCxl(Order ord, String message) {
 
 		quickfix.fix42.ExecutionReport msg = new quickfix.fix42.ExecutionReport();
 		quickfix.field.ClOrdID clOrdID = ord.clOrdID;
@@ -644,7 +569,8 @@ public class MessageParser extends MessageCracker {
 		quickfix.field.OrderQty orderqty = ord.orderqty;
 		quickfix.field.ExecID execID = getNextExecID();
 		quickfix.field.TransactTime transactTime = ord.transactTime;
-		quickfix.field.Text text = new quickfix.field.Text("Mikex: unsolicited cancel");
+		if (message==null) message="Mikex: unsolicited cancel";
+		quickfix.field.Text text = new quickfix.field.Text(message);
 
 
 		msg.setField(clOrdID);
@@ -663,23 +589,7 @@ public class MessageParser extends MessageCracker {
 		msg.setField(transactTime);
 		msg.setField(text);
 
-		// optional ones
-		quickfix.field.SecurityType securityType = ord.securityType;
-		quickfix.field.SecurityID securityID = ord.securityID;
-		quickfix.field.MaturityMonthYear maturityMonthYear = ord.maturityMonthYear;
-		quickfix.field.PutOrCall putOrCall = ord.putOrCall;
-		quickfix.field.StrikePrice strikePrice = ord.strikePrice;
-		if (!ord.securityType.valueEquals(""))
-			msg.setField(securityType);
-		if (!ord.securityID.valueEquals(""))
-			msg.setField(securityID);
-		if (!ord.maturityMonthYear.valueEquals(""))
-			msg.setField(maturityMonthYear);
-		if (ord.putOrCall.valueEquals(quickfix.field.PutOrCall.PUT)
-				|| ord.putOrCall.valueEquals(quickfix.field.PutOrCall.CALL))
-			msg.setField(putOrCall);
-		if (!ord.strikePrice.valueEquals(0))
-			msg.setField(strikePrice);
+		addOptionalFields(ord,msg);
 
 		send(msg);
 	}

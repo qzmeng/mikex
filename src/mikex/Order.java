@@ -25,7 +25,9 @@ public class Order {
 	public quickfix.field.PutOrCall putOrCall = new quickfix.field.PutOrCall(' ');
 
 	public quickfix.field.OrdType ordType = new quickfix.field.OrdType(quickfix.field.OrdType.LIMIT);
-	
+	public quickfix.field.TimeInForce timeInForce = new quickfix.field.TimeInForce(quickfix.field.TimeInForce.DAY);
+	public quickfix.field.Currency currency = new quickfix.field.Currency();
+		
 	public quickfix.field.TransactTime transactTime = new quickfix.field.TransactTime();
 	
 	private MessageParser parser;

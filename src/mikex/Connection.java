@@ -51,7 +51,7 @@ public class Connection implements quickfix.Application {
 	@Override
 	public void fromAdmin(Message arg0, SessionID arg1) throws FieldNotFound,
 			IncorrectDataFormat, IncorrectTagValue, RejectLogon {
-		logger.info("fromAdmin[" + arg1.toString() + "]: " + formatFix(arg0));
+		logger.debug("fromAdmin[" + arg1.toString() + "]: " + formatFix(arg0));
 
 	}
 
@@ -95,7 +95,7 @@ public class Connection implements quickfix.Application {
 
 	@Override
 	public void toAdmin(Message arg0, SessionID arg1) {
-		logger.info("toAdmin[" + arg1.toString() + "]: " + formatFix(arg0));
+		logger.debug("toAdmin[" + arg1.toString() + "]: " + formatFix(arg0));
 	}
 
 	@Override

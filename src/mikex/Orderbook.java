@@ -45,7 +45,7 @@ public class Orderbook {
 		
 		switch (getMarketStatus()) {
 		case CLOSED:
-			cancelAll();
+			cancelAll("Market is closing, removing all orders");
 			break;
 		case AUCTION:
 		case CONTINUOUS:
@@ -247,30 +247,34 @@ public class Orderbook {
 		}
 	}
 
-	public void cancelAll() {
+	public void cancelAll(String message) {
 
 		for (Order ord : book.values()) {
 			try {
 				if (ord.leavesQty.getValue() > 0) {
-					String symbol = ord.getSymbolKey();
-					if (asset.containsKey(symbol)) {
-						Ita ita = asset.get(symbol);
-						if (!ita.delOrder(ord)) {
-							logger.info("Couldn't unsolicited cancel order  "
-									+ ord);
-						}
-					}
-					ord.setTimestamp();
-					ord.ordStatus = new quickfix.field.OrdStatus(
-							quickfix.field.OrdStatus.CANCELED);
-					ord.leavesQty = new quickfix.field.LeavesQty(0);
-					logger.info("Unsolicited cancelling " + ord.getKey());
-					ord.getParser().sendUnsolicitedCxl(ord);
+					unsolicitedCancel(ord,message);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	public void unsolicitedCancel(Order ord, String message) {
+		String symbol = ord.getSymbolKey();
+		if (asset.containsKey(symbol)) {
+			Ita ita = asset.get(symbol);
+			if (!ita.delOrder(ord)) {
+				logger.info("Couldn't unsolicited cancel order  "
+						+ ord);
+			}
+		}
+		ord.setTimestamp();
+		ord.ordStatus = new quickfix.field.OrdStatus(
+				quickfix.field.OrdStatus.CANCELED);
+		ord.leavesQty = new quickfix.field.LeavesQty(0);
+		logger.info("Unsolicited cancelling " + ord.getKey());
+		ord.getParser().sendUnsolicitedCxl(ord, message);
 	}
 	
 	public void uncrossAll() {

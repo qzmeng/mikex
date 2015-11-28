@@ -80,6 +80,12 @@ public class Ita {
 			}
 		}
 		uncross();
+		
+		if (ord.timeInForce.valueEquals(quickfix.field.TimeInForce.IMMEDIATE_OR_CANCEL) || ord.timeInForce.valueEquals(quickfix.field.TimeInForce.FILL_OR_KILL)) {
+			if (!ord.fullyFilled()) {
+				orderbook.unsolicitedCancel(ord,"Removing unfilled balance of FAK/FOK order");
+			}
+		}
 	}
 
 	LinkedList<OrderQueue> findPriceSide(Order ord) {
@@ -131,7 +137,8 @@ public class Ita {
 			}
 			return delresult;
 		}
-		return false;
+
+        throw new RuntimeException("Unable to delete order");
 
 	}
 
@@ -215,6 +222,7 @@ public class Ita {
 			askqty = sellPrice.getFirst().getVolume();
 		}
 
+		
 		
 		logger.info(asset+": Best=" + bidqty + "@" + (bidmarket?"MARKET":bid) + " / " + askqty + "@" + (askmarket?"MARKET":ask));
 
