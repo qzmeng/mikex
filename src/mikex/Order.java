@@ -27,6 +27,10 @@ public class Order {
 	public quickfix.field.OrdType ordType = new quickfix.field.OrdType(quickfix.field.OrdType.LIMIT);
 	public quickfix.field.TimeInForce timeInForce = new quickfix.field.TimeInForce(quickfix.field.TimeInForce.DAY);
 	public quickfix.field.Currency currency = new quickfix.field.Currency();
+	public quickfix.field.Account account = new quickfix.field.Account();
+	public quickfix.field.ClientID clientid = new quickfix.field.ClientID();
+	public quickfix.field.SettlCurrency settlCurrency = new quickfix.field.SettlCurrency();
+	public quickfix.field.Rule80A rule80A  = new quickfix.field.Rule80A();
 		
 	public quickfix.field.TransactTime transactTime = new quickfix.field.TransactTime();
 	

@@ -46,35 +46,10 @@ public class MessageParser extends MessageCracker {
 			msg.get(ord.side);
 			msg.get(ord.symbol);
 			msg.get(ord.orderqty);
-			msg.get(ord.ordType);
+			// optional tags2
+			getOptionalFields(ord, msg);
 			if (ord.ordType.getValue() == quickfix.field.OrdType.LIMIT)
 				msg.get(ord.price);
-			msg.get(ord.timeInForce);
-			// optional tags2
-			try {
-				msg.get(ord.securityID);
-			} catch (FieldNotFound e) {
-			}
-			try {
-				msg.get(ord.securityType);
-			} catch (FieldNotFound e) {
-			}
-			try {
-				msg.get(ord.maturityMonthYear);
-			} catch (FieldNotFound e) {
-			}
-			try {
-				msg.get(ord.putOrCall);
-			} catch (FieldNotFound e) {
-			}
-			try {
-				msg.get(ord.strikePrice);
-			} catch (FieldNotFound e) {
-			}
-			try {
-				msg.get(ord.currency);
-			} catch (FieldNotFound e) {
-			}
 
 			if (ord.orderqty.getValue() < 1) {
 				this.sendReject(ord, "Mikex: order qty must be 1 or greater");
@@ -90,6 +65,27 @@ public class MessageParser extends MessageCracker {
 			e.printStackTrace();
 			this.sendReject(ord, e.getMessage());
 		}
+	}
+
+	private void getOptionalFields(Order order,
+			quickfix.fix42.NewOrderSingle msg) {
+		try {msg.get(order.securityID);		} catch (FieldNotFound e) {		}
+		try {msg.get(order.securityType);		} catch (FieldNotFound e) {		}
+		try {msg.get(order.maturityMonthYear);		} catch (FieldNotFound e) {		}
+		try {msg.get(order.putOrCall);		} catch (FieldNotFound e) {		}
+		try {msg.get(order.strikePrice);		} catch (FieldNotFound e) {		}
+		try {msg.get(order.currency);		} catch (FieldNotFound e) {		}
+		try {msg.get(order.settlCurrency);} catch (FieldNotFound e) {}
+		try {msg.get(order.clientid);} catch (FieldNotFound e) {}
+		try {msg.get(order.account);} catch (FieldNotFound e) {}
+		try {msg.get(order.rule80A);} catch (FieldNotFound e) {}
+        try {msg.get(order.ordType);} catch (FieldNotFound e) {
+            order.ordType=new quickfix.field.OrdType(quickfix.field.OrdType.LIMIT);
+        }
+		try {msg.get(order.timeInForce);} catch (FieldNotFound e) {
+            order.timeInForce=new quickfix.field.TimeInForce(quickfix.field.TimeInForce.DAY);
+        }
+
 	}
 
 	public void onMessage(quickfix.fix42.OrderCancelRequest msg,
@@ -231,6 +227,10 @@ public class MessageParser extends MessageCracker {
 		quickfix.field.Currency currency = order.currency;
 		quickfix.field.OrdType ordType = order.ordType;
 		quickfix.field.TimeInForce timeInForce = order.timeInForce;
+		quickfix.field.Account account = order.account;
+		quickfix.field.ClientID clientid = order.clientid;
+		quickfix.field.SettlCurrency settlCurrency = order.settlCurrency;
+		quickfix.field.Rule80A rule80A = order.rule80A;
 		if (!securityType.valueEquals(""))
 			msg.setField(securityType);
 		if (!securityID.valueEquals(""))
@@ -244,10 +244,19 @@ public class MessageParser extends MessageCracker {
 			msg.setField(strikePrice);
 		if (!currency.valueEquals(""))
 			msg.setField(currency);
-		if (!ordType.equals(""))
+		if (!ordType.equals(" "))
 			msg.setField(ordType);
-		if (!timeInForce.equals(""))
-			msg.setField(ordType);		
+		if (!timeInForce.equals(" "))
+			msg.setField(timeInForce);
+		if (!account.valueEquals(""))
+			msg.setField(account);
+		if (!clientid.valueEquals(""))
+			msg.setField(clientid);	
+		if (!settlCurrency.valueEquals(""))
+			msg.setField(settlCurrency);	
+		if (rule80A.valueEquals(quickfix.field.Rule80A.AGENCY_SINGLE_ORDER) ||
+            rule80A.valueEquals(quickfix.field.Rule80A.PRINCIPAL))
+			msg.setField(rule80A);		
 	}
 
 	public void sendReject(Order origord, String rejectReason) {
