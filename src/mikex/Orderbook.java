@@ -12,6 +12,7 @@ public class Orderbook {
 
 	final Logger logger = LoggerFactory.getLogger(getClass());
 	private MarketStatus marketStatus;
+	private boolean nonCxl = false;
 
 	enum MarketStatus {
 		CONTINUOUS, AUCTION, CLOSED
@@ -26,15 +27,22 @@ public class Orderbook {
 	}
 
 	public String getMarketStatusString() {
+		StringBuilder status = new StringBuilder();
+		
 		switch (getMarketStatus()) {
 		case CONTINUOUS:
-			return "CONTINUOUS";
+			status.append("CONTINUOUS");
+			break;
 		case AUCTION:
-			return "AUCTION";
+			status.append("AUCTION");
+			break;
 		case CLOSED:
-			return "CLOSED";
+			status.append("CLOSED");
+			break;
 		}
-		return "unknown";
+		
+		if (this.nonCxl) status.append(" (NON-CANCEL)");
+		return status.toString();
 	}
 	
 	public void setMarketStatus(MarketStatus marketStatus) {
@@ -83,7 +91,13 @@ public class Orderbook {
 	}
 
 	public void delOrder(Order delOrd) {
-
+		if (this.nonCxl) {
+			delOrd.setTimestamp();
+			delOrd.getParser().sendCxlRejUnknown(delOrd,
+					"Market is in non-cancel status");
+			return;
+		}
+		
 		String remKey = delOrd.getOrigKey();
 		delOrd.setTimestamp();
 		if (book.containsKey(remKey)) {
@@ -140,7 +154,12 @@ public class Orderbook {
 	}
 
 	public void replaceOrder(Order replOrd) {
-
+		if (this.nonCxl) {
+			replOrd.setTimestamp();
+			replOrd.getParser().sendCxlRejUnknown(replOrd,
+					"Market is in non-cancel status");
+			return;
+		}
 		String remKey = replOrd.getOrigKey();
 		replOrd.setTimestamp();
 		logger.info("Replace order start " + remKey);
@@ -281,5 +300,11 @@ public class Orderbook {
 		for (Ita a: asset.values()) {
 			a.uncross();
 		}
+	}
+
+	public void setNonCxl(boolean b) {
+		this.nonCxl=b;
+		logger.info("Setting market mode to: "+getMarketStatusString());
+		
 	}
 }

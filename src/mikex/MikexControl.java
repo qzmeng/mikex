@@ -32,20 +32,32 @@ public class MikexControl implements MikexControlMBean {
 	@Override
 	public void marketModeContinuous() {
 		this.orderbook.setMarketStatus(MarketStatus.CONTINUOUS);
+		this.orderbook.setNonCxl(false);
 	}
 
 	@Override
 	public void marketModeClosed() {
 		this.orderbook.setMarketStatus(MarketStatus.CLOSED);
-
+		this.orderbook.setNonCxl(false);
 	}
 
 	@Override
 	public void marketModeAuction() {
 		this.orderbook.setMarketStatus(MarketStatus.AUCTION);
-
+		this.orderbook.setNonCxl(false);
 	}
-	
+	@Override
+	public void marketModeContinuousNonCxl() {
+		this.orderbook.setMarketStatus(MarketStatus.CONTINUOUS);
+		this.orderbook.setNonCxl(true);
+	}
+
+	@Override
+	public void marketModeAuctionNonCxl() {
+		this.orderbook.setMarketStatus(MarketStatus.AUCTION);
+		this.orderbook.setNonCxl(true);
+
+	}	
 	public String getMarketStatus() {
 		return this.orderbook.getMarketStatusString();
 	}
