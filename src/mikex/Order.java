@@ -1,6 +1,7 @@
 package mikex;
 
-import quickfix.field.TransactTime;
+
+
 
 public class Order {
 	public quickfix.field.ClOrdID clOrdID = new quickfix.field.ClOrdID();
@@ -18,6 +19,8 @@ public class Order {
 	public quickfix.field.CumQty cumQty = new quickfix.field.CumQty();
 	public quickfix.field.LeavesQty leavesQty = new quickfix.field.LeavesQty();
 
+	public quickfix.field.ExDestination exDestination = new quickfix.field.ExDestination();
+	public quickfix.field.SecurityExchange secExchange = new quickfix.field.SecurityExchange();
 	public quickfix.field.SecurityID securityID = new quickfix.field.SecurityID();
 	public quickfix.field.SecurityType securityType = new quickfix.field.SecurityType();
 	public quickfix.field.MaturityMonthYear maturityMonthYear = new quickfix.field.MaturityMonthYear();
@@ -65,7 +68,7 @@ public class Order {
 	long orderTimestamp;
 
 	public void setTimestamp() {
-		this.transactTime=new TransactTime();
+		this.transactTime=new quickfix.field.TransactTime();
 		this.orderTimestamp = System.nanoTime();
 	}
 
@@ -98,8 +101,23 @@ public class Order {
 		return this.leavesQty.valueEquals(0);
 	}
 
-	public void setTransactTimestamp(TransactTime timestamp) {
+	public void setTransactTimestamp(quickfix.field.TransactTime timestamp) {
 		this.transactTime=timestamp;
+	}
+	
+	public String getOverrideCurrency() {
+			String ex="";
+			if (this.secExchange != null) ex=this.secExchange.getValue();
+			if (this.exDestination != null && (ex==null || ex.isEmpty())) ex=this.exDestination.getValue();
+			if ("XHKF".equals(ex)) return "HKD";
+			else if ("XOSE".equals(ex)) return "JPY";
+			else if ("XSFE".equals(ex)) return "AUD";
+			else if ("XSIM".equals(ex)) {
+				if (this.symbol.getValue().startsWith("NK")) return "JPY";
+				else return "USD";
+			}
+			
+		return null;
 	}
 	
 }

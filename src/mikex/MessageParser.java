@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import quickfix.*;
+import quickfix.fix42.NewOrderSingle;
 
 public class MessageParser extends MessageCracker {
 	final Logger logger = LoggerFactory.getLogger(getClass());
@@ -69,6 +70,9 @@ public class MessageParser extends MessageCracker {
 
 	private void getOptionalFields(Order order,
 			quickfix.fix42.NewOrderSingle msg) {
+		try {msg.get(order.secExchange);		} catch (FieldNotFound e) {		}
+		try {msg.get(order.exDestination);		} catch (FieldNotFound e) {		}
+
 		try {msg.get(order.securityID);		} catch (FieldNotFound e) {		}
 		try {msg.get(order.securityType);		} catch (FieldNotFound e) {		}
 		try {msg.get(order.maturityMonthYear);		} catch (FieldNotFound e) {		}
@@ -85,7 +89,19 @@ public class MessageParser extends MessageCracker {
 		try {msg.get(order.timeInForce);} catch (FieldNotFound e) {
             order.timeInForce=new quickfix.field.TimeInForce(quickfix.field.TimeInForce.DAY);
         }
+		overrideCurrency(order,msg);
+	}
 
+
+
+	private void overrideCurrency(Order order, NewOrderSingle msg) {
+		String ccy = order.getOverrideCurrency();
+		if (ccy != null && order.currency.getValue().isEmpty() && order.settlCurrency.getValue().isEmpty()) {
+			order.settlCurrency=new quickfix.field.SettlCurrency(ccy);
+			order.currency=new quickfix.field.Currency(ccy);
+			logger.info("Override currency to "+ccy);
+		}
+		
 	}
 
 	public void onMessage(quickfix.fix42.OrderCancelRequest msg,
@@ -219,6 +235,7 @@ public class MessageParser extends MessageCracker {
 
 	private void addOptionalFields(Order order,
 			quickfix.fix42.Message msg) {
+		quickfix.field.SecurityExchange secExchange = order.secExchange;
 		quickfix.field.SecurityType securityType = order.securityType;
 		quickfix.field.SecurityID securityID = order.securityID;
 		quickfix.field.MaturityMonthYear maturityMonthYear = order.maturityMonthYear;
@@ -231,6 +248,8 @@ public class MessageParser extends MessageCracker {
 		quickfix.field.ClientID clientid = order.clientid;
 		quickfix.field.SettlCurrency settlCurrency = order.settlCurrency;
 		quickfix.field.Rule80A rule80A = order.rule80A;
+		if (!secExchange.valueEquals(""))
+			msg.setField(secExchange);
 		if (!securityType.valueEquals(""))
 			msg.setField(securityType);
 		if (!securityID.valueEquals(""))
