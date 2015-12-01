@@ -20,7 +20,7 @@ public class MessageParser extends MessageCracker {
 
 	public synchronized quickfix.field.OrderID getNextOrderID() {
 		quickfix.field.OrderID newOrderID = new quickfix.field.OrderID("ord"
-				+ Integer.toString(ordseq) + "." + new Date().getTime());
+				+ Integer.toString(ordseq) + "-" + new Date().getTime());
 		ordseq++;
 		return newOrderID;
 	}
@@ -29,7 +29,7 @@ public class MessageParser extends MessageCracker {
 
 	public synchronized quickfix.field.ExecID getNextExecID() {
 		quickfix.field.ExecID newExecID = new quickfix.field.ExecID("ex"
-				+ Integer.toString(execseq) + "." + new Date().getTime());
+				+ Integer.toString(execseq) + "-" + new Date().getTime());
 		execseq++;
 		return newExecID;
 	}
