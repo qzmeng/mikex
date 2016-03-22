@@ -8,6 +8,8 @@ public interface MikexControlMBean {
   public void marketModeClosed();
   public void marketModeAuction();
   public void marketModeAuctionNonCxl();
+  public void ackInhibit();
+  public void ackGenerate();
   public String getName();
   public String getMarketStatus();
   public void setConnectionResponseDelay(int newResponseDelay);

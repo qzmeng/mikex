@@ -58,6 +58,19 @@ public class MikexControl implements MikexControlMBean {
 		this.orderbook.setNonCxl(true);
 
 	}	
+
+
+	@Override
+	public void ackInhibit() {
+		this.orderbook.setAckInhibit(true);
+	}
+
+	@Override
+	public void ackGenerate() {
+		this.orderbook.setAckInhibit(false);
+	}
+
+
 	public String getMarketStatus() {
 		return this.orderbook.getMarketStatusString();
 	}

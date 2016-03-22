@@ -13,6 +13,7 @@ public class Orderbook {
 	final Logger logger = LoggerFactory.getLogger(getClass());
 	private MarketStatus marketStatus;
 	private boolean nonCxl = false;
+	private boolean ackInhibit = false;
 
 	enum MarketStatus {
 		CONTINUOUS, AUCTION, CLOSED
@@ -44,6 +45,11 @@ public class Orderbook {
 		if (this.nonCxl) status.append(" (NON-CANCEL)");
 		return status.toString();
 	}
+
+	public void setAckInhibit(boolean ackInhibitNewVal) {
+        logger.info("Setting ackInhibit to: "+ackInhibitNewVal);
+        this.ackInhibit = ackInhibitNewVal;
+    }
 	
 	public void setMarketStatus(MarketStatus marketStatus) {
 		this.marketStatus = MarketStatus.CONTINUOUS; // hack to force uncrossing
@@ -73,7 +79,8 @@ public class Orderbook {
 				quickfix.field.OrdStatus.NEW);
 		ord.leavesQty = new quickfix.field.LeavesQty(ord.orderqty.getValue());
 		logger.debug("entered in book " + ord.getKey());
-		ord.getParser().sendAck(ord);
+
+		if (!ackInhibit) ord.getParser().sendAck(ord);
 
 		String symbol = ord.getSymbolKey();
 		Ita ita;
