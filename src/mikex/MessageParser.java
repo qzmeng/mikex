@@ -512,7 +512,7 @@ public class MessageParser extends MessageCracker {
 		quickfix.field.ClOrdID newClOrdId = ord.clOrdID;
 		quickfix.field.OrdStatus ordStatus = ord.ordStatus;
 		quickfix.field.ExecType execType = new quickfix.field.ExecType(
-				quickfix.field.ExecType.NEW);
+				quickfix.field.ExecType.REPLACE);
 		quickfix.field.ExecTransType execTransType = new quickfix.field.ExecTransType(
 				quickfix.field.ExecTransType.NEW);
 		quickfix.field.OrderID orderID = ord.orderID;
