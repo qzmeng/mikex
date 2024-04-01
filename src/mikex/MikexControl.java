@@ -70,7 +70,17 @@ public class MikexControl implements MikexControlMBean {
 		this.orderbook.setAckInhibit(false);
 	}
 
+	@Override
+	public void autoFillDisable() {
+		this.orderbook.setAutoFill(false);
+	}
 
+	@Override
+	public void autoFillEnable() {
+		this.orderbook.setAutoFill(true);
+	}
+
+	
 	public String getMarketStatus() {
 		return this.orderbook.getMarketStatusString();
 	}

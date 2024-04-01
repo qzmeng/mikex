@@ -14,6 +14,7 @@ public class Orderbook {
 	private MarketStatus marketStatus;
 	private boolean nonCxl = false;
 	private boolean ackInhibit = false;
+	private boolean autoFill = false;
 
 	enum MarketStatus {
 		CONTINUOUS, AUCTION, CLOSED
@@ -50,6 +51,12 @@ public class Orderbook {
         logger.info("Setting ackInhibit to: "+ackInhibitNewVal);
         this.ackInhibit = ackInhibitNewVal;
     }
+
+	public void setAutoFill(boolean autoFillNewVal) {
+        logger.info("Setting autoFill to: "+autoFillNewVal);
+        this.autoFill = autoFillNewVal;
+    }
+	
 	
 	public void setMarketStatus(MarketStatus marketStatus) {
 		this.marketStatus = MarketStatus.CONTINUOUS; // hack to force uncrossing
@@ -74,27 +81,44 @@ public class Orderbook {
 			ord.getParser().sendReject(ord, "market is closed");
 			return;
 		}
-		book.put(ord.getKey(), ord);
 		ord.ordStatus = new quickfix.field.OrdStatus(
 				quickfix.field.OrdStatus.NEW);
 		ord.leavesQty = new quickfix.field.LeavesQty(ord.orderqty.getValue());
-		logger.debug("entered in book " + ord.getKey());
 
 		if (!ackInhibit) ord.getParser().sendAck(ord);
 
-		String symbol = ord.getSymbolKey();
-		Ita ita;
-		if (asset.containsKey(symbol)) {
-			ita = asset.get(symbol);
+		if (autoFill) {
+			// non matching mode- just fill with random clips
+			while (!ord.fullyFilled()) {
+				int fillQty = 1;
+				int fillPx = 100;
+				if (!ord.leavesQty.valueEquals(1)) {
+					fillQty = (int) Math.ceil(ord.leavesQty.getValue() * Math.random());
+				}
+				if (ord.ordType.getValue() != quickfix.field.OrdType.MARKET) {
+					fillPx = (int) ord.price.getValue();
+				}
+				ord.fill(fillQty, fillPx);
+			}
 		} else {
-			ita = new Ita();
-			ita.setOrderbook(this);
-			logger.info("creating new ita for symbol " + symbol);
-			asset.put(symbol, ita);
-		}
+			// matching mode
+			book.put(ord.getKey(), ord);
+			logger.debug("entered in book " + ord.getKey());
 
-		ord.setTimestamp();
-		ita.addOrder(ord);
+			String symbol = ord.getSymbolKey();
+			Ita ita;
+			if (asset.containsKey(symbol)) {
+				ita = asset.get(symbol);
+			} else {
+				ita = new Ita();
+				ita.setOrderbook(this);
+				logger.info("creating new ita for symbol " + symbol);
+				asset.put(symbol, ita);
+			}
+	
+			ord.setTimestamp();
+			ita.addOrder(ord);
+		}
 	}
 
 	public void delOrder(Order delOrd) {

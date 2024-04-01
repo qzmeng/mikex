@@ -46,6 +46,11 @@ public class Startup {
 		connectionManager.startup();
 		connectionManager.setOrderbook(orderbook);
 		connectionManager.connectAll();
+		
+		if ("true".equalsIgnoreCase(System.getProperty("autofill"))) {
+			orderbook.setAutoFill(true);
+		}
+		logger.info("Ready");
 	}
 	
 	public static void main(String[] args) {
