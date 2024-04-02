@@ -15,6 +15,7 @@ public class Orderbook {
 	private boolean nonCxl = false;
 	private boolean ackInhibit = false;
 	private boolean autoFill = false;
+	private boolean autoFillToggle = false;
 
 	enum MarketStatus {
 		CONTINUOUS, AUCTION, CLOSED
@@ -52,11 +53,16 @@ public class Orderbook {
         this.ackInhibit = ackInhibitNewVal;
     }
 
-	public void setAutoFill(boolean autoFillNewVal) {
-        logger.info("Setting autoFill to: "+autoFillNewVal);
-        this.autoFill = autoFillNewVal;
+	public void setAutoFill(boolean n) {
+        logger.info("Setting autoFill to: "+n);
+        this.autoFill = n;
     }
-	
+
+	public void setAutoFillToggle(boolean n) {
+        logger.info("Setting autoFillToggle to: "+n);
+        this.autoFillToggle = n;
+    }
+
 	
 	public void setMarketStatus(MarketStatus marketStatus) {
 		this.marketStatus = MarketStatus.CONTINUOUS; // hack to force uncrossing
@@ -119,6 +125,8 @@ public class Orderbook {
 			ord.setTimestamp();
 			ita.addOrder(ord);
 		}
+		
+		if (autoFillToggle) autoFill = !autoFill;
 	}
 
 	public void delOrder(Order delOrd) {

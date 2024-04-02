@@ -12,6 +12,8 @@ public interface MikexControlMBean {
   public void ackGenerate();
   public void autoFillDisable();
   public void autoFillEnable();
+  public void autoFillToggleDisable();
+  public void autoFillToggleEnable();
   public String getName();
   public String getMarketStatus();
   public void setConnectionResponseDelay(int newResponseDelay);

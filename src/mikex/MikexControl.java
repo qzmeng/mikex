@@ -80,6 +80,16 @@ public class MikexControl implements MikexControlMBean {
 		this.orderbook.setAutoFill(true);
 	}
 
+	@Override
+	public void autoFillToggleDisable() {
+		this.orderbook.setAutoFillToggle(false);
+	}
+
+	@Override
+	public void autoFillToggleEnable() {
+		this.orderbook.setAutoFillToggle(true);
+	}
+
 	
 	public String getMarketStatus() {
 		return this.orderbook.getMarketStatusString();

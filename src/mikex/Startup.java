@@ -50,6 +50,11 @@ public class Startup {
 		if ("true".equalsIgnoreCase(System.getProperty("autofill"))) {
 			orderbook.setAutoFill(true);
 		}
+		if ("true".equalsIgnoreCase(System.getProperty("autofilltoggle"))) {
+			orderbook.setAutoFillToggle(true);
+		}
+
+		
 		logger.info("Ready");
 	}
 	

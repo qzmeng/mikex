@@ -22,5 +22,5 @@
     <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="mikex.Startup"/>
     <stringAttribute key="org.eclipse.jdt.launching.MODULE_NAME" value="mikex"/>
     <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="mikex"/>
-    <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dautofill=true -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=8888 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false"/>
+    <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dautofilltoggle=true -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=8888 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false"/>
 </launchConfiguration>
